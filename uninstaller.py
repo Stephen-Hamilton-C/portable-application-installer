@@ -31,15 +31,11 @@ if APP_NAME == None or INSTALL_MODE == None:
     print("You will have to manually remove the files.")
     sys.exit(1)
 
-
-
 REGKEY_APPPATHS = "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\"+APP_NAME
 REGKEY_UNINSTALL = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+APP_NAME
 PROGRAMDATA = os.getenv("PROGRAMDATA")
 APPDATA = os.getenv("APPDATA")
 START_MENU_APPPATH = os.path.join(PROGRAMDATA if INSTALL_MODE == "a" else APPDATA, "Microsoft", "Windows", "Start Menu", "Programs")
-
-
 
 # Remove registry keys
 if False:
@@ -48,13 +44,9 @@ if False:
     winreg.DeleteKey(key_type, REGKEY_APPPATHS)
     winreg.DeleteKey(key_type, REGKEY_UNINSTALL)
 
-
-
 # Remove shortcut from start menu
 print("Removing start menu shortcut...")
 os.remove(os.path.join(START_MENU_APPPATH, APP_NAME+".lnk"))
-
-
 
 # Remove files from directory
 print("Removing files from install directory...")
