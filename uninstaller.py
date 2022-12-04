@@ -11,6 +11,9 @@ if platform.system() != "Windows":
     print("This script will only work on Windows!")
     sys.exit(1)
 
+import os
+import winreg
+import shutil
 
 APP_NAME = None
 INSTALL_MODE = None
@@ -28,11 +31,31 @@ if APP_NAME == None or INSTALL_MODE == None:
     print("You will have to manually remove the files.")
     sys.exit(1)
 
-# Get registry keys from APP_NAME
+
+
 REGKEY_APPPATHS = "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\"+APP_NAME
 REGKEY_UNINSTALL = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+APP_NAME
+PROGRAMDATA = os.getenv("PROGRAMDATA")
+APPDATA = os.getenv("APPDATA")
+START_MENU_APPPATH = os.path.join(PROGRAMDATA if INSTALL_MODE == "a" else APPDATA, "Microsoft", "Windows", "Start Menu", "Programs")
 
-# TODO: Remove registry keys
-# TODO: Remove shortcut from start menu
-# TODO: Remove files from directory
 
+
+# Remove registry keys
+if False:
+    print("Removing registry entries...")
+    key_type = winreg.HKEY_LOCAL_MACHINE if INSTALL_MODE == "a" else winreg.HKEY_CURRENT_USER
+    winreg.DeleteKey(key_type, REGKEY_APPPATHS)
+    winreg.DeleteKey(key_type, REGKEY_UNINSTALL)
+
+
+
+# Remove shortcut from start menu
+print("Removing start menu shortcut...")
+os.remove(os.path.join(START_MENU_APPPATH, APP_NAME+".lnk"))
+
+
+
+# Remove files from directory
+print("Removing files from install directory...")
+shutil.rmtree(os.path.dirname(os.path.realpath(__file__)))
