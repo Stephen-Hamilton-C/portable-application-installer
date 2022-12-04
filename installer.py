@@ -13,6 +13,7 @@ import winreg
 import os
 import shutil
 import ctypes
+import subprocess
 
 # Try to import pywin32
 try:
@@ -21,7 +22,6 @@ except ImportError:
     print("pywin32 is not installed, which is required for this script to run.")
     response = input("Would you like to install pywin32? (Y/n): ").lower()
     if len(response) < 1 or response[0] != "n":
-        import subprocess
         print("Installing pywin32 with pip3...")
         try:
             subprocess.run(["pip3", "install", "pywin32"], check=True)
@@ -59,7 +59,7 @@ def get_app_name_and_install_dir(prompt: str):
         install_dir = os.path.join(PROGRAMFILES, app_name)
     else:
         install_dir = os.path.join(LOCALAPPDATA, app_name)
-    while os.path.exists(install_dir):
+    while os.path.exists(install_dir) and os.listdir(install_dir) != []:
         print("Name already taken! Try a different name.")
         app_name = input(prompt)
         if INSTALL_MODE == "a":
@@ -116,6 +116,10 @@ if len(copy_all) < 1 or copy_all[0] == "n":
     shutil.copy2(EXECUTABLE_PATH, INSTALLED_EXE_PATH)
 else:
     print("Copying all files in \""+EXECUTABLE_DIR+"\" to \""+INSTALL_DIR+"\"...")
+    try:
+        shutil.rmtree(INSTALL_DIR)
+    except FileNotFoundError:
+        pass
     shutil.copytree(EXECUTABLE_DIR, INSTALL_DIR)
 
 
@@ -138,7 +142,9 @@ with open(os.path.join(INSTALL_DIR, "uninstaller-data"), "w") as dataFile:
     dataFile.write("# ANY MODIFICATION COULD RESULT IN BREAKING WINDOWS REGISTRY!\n")
     dataFile.write(APP_NAME+"\n")
     dataFile.write(INSTALL_MODE+"\n")
+print("Compiling uninstaller to exe...")
 shutil.copy("uninstaller.py", INSTALL_DIR)
+shutil.copy("uninstaller.bat", INSTALL_DIR)
 
 
 
@@ -150,25 +156,25 @@ shutil.copy("uninstaller.py", INSTALL_DIR)
 # REGKEY_UNINSTALL "DisplayVersion" "Portable"
 # REGKEY_UNINSTALL "UninstallString" "INSTALL_DIR\\uninstaller.py"
 # REGKEY_UNINSTALL "DisplayIcon" "INSTALL_DIR\\EXECUTABLE_NAME"
-if False:
-    print("Writing registry keys...")
-    key_type = winreg.HKEY_LOCAL_MACHINE if INSTALL_MODE == "a" else winreg.HKEY_CURRENT_USER
-    try:
-        apppath_key = winreg.OpenKey(key_type, REGKEY_APPPATHS, 0, winreg.KEY_WRITE)
-    except:
-        apppath_key = winreg.CreateKey(key_type, REGKEY_APPPATHS)
-    winreg.SetValueEx(apppath_key, "", 0, winreg.REG_SZ, INSTALLED_EXE_PATH)
-    winreg.SetValueEx(apppath_key, "Path", 0, winreg.REG_SZ, INSTALL_DIR)
-    winreg.CloseKey(apppath_key)
-    try:
-        uninstall_key = winreg.OpenKey(key_type, REGKEY_UNINSTALL, 0, winreg.KEY_WRITE)
-    except:
-        uninstall_key = winreg.CreateKey(key_type, REGKEY_UNINSTALL)
-    winreg.SetValueEx(uninstall_key, "DisplayName", 0, winreg.REG_SZ, APP_NAME)
-    winreg.SetValueEx(uninstall_key, "DisplayVersion", 0, winreg.REG_SZ, "Portable")
-    winreg.SetValue(uninstall_key, "UninstallString", 0, winreg.REG_SZ, os.path.join(INSTALL_DIR, "uninstaller.py"))
-    winreg.SetValue(uninstall_key, "DisplayIcon", 0, winreg.REG_SZ, INSTALLED_EXE_PATH)
-    winreg.CloseKey(uninstall_key)
+print("Writing registry keys...")
+key_type = winreg.HKEY_LOCAL_MACHINE if INSTALL_MODE == "a" else winreg.HKEY_CURRENT_USER
+try:
+    apppath_key = winreg.OpenKey(key_type, REGKEY_APPPATHS, 0, winreg.KEY_WRITE)
+except:
+    apppath_key = winreg.CreateKey(key_type, REGKEY_APPPATHS)
+winreg.SetValueEx(apppath_key, "", 0, winreg.REG_SZ, INSTALLED_EXE_PATH)
+winreg.SetValueEx(apppath_key, "Path", 0, winreg.REG_SZ, INSTALL_DIR)
+winreg.CloseKey(apppath_key)
+try:
+    uninstall_key = winreg.OpenKey(key_type, REGKEY_UNINSTALL, 0, winreg.KEY_WRITE)
+except:
+    uninstall_key = winreg.CreateKey(key_type, REGKEY_UNINSTALL)
+winreg.SetValueEx(uninstall_key, "DisplayName", 0, winreg.REG_SZ, APP_NAME)
+winreg.SetValueEx(uninstall_key, "DisplayVersion", 0, winreg.REG_SZ, "Portable")
+winreg.SetValueEx(uninstall_key, "UninstallString", 0, winreg.REG_SZ, os.path.join(INSTALL_DIR, "uninstaller.bat"))
+winreg.SetValueEx(uninstall_key, "DisplayIcon", 0, winreg.REG_SZ, INSTALLED_EXE_PATH)
+winreg.CloseKey(uninstall_key)
 
 print(APP_NAME+" has been successfully installed! You can run the application from the start menu.")
 print("To uninstall the program, just uninstall it like any other Windows application.")
+enter = input("Press enter to exit...")
