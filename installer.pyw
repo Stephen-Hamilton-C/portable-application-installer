@@ -110,7 +110,7 @@ def run(app_name: str, install_dir: str, exe_path: str, install_mode: str, copy_
             shutil.rmtree(install_dir)
         except FileNotFoundError:
             pass
-        shutil.copytree(exe_dir, install_dir)
+        shutil.copytree(exe_dir, install_dir, ignore=shutil.ignore_patterns(".git"))
 
 
 
