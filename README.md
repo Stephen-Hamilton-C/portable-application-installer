@@ -5,7 +5,7 @@ A simple Python program made to make it simple to install portable programs to y
 1. First, make sure you have [Python 3](https://www.python.org/downloads/) or later installed
 2. Download this repo as a zip folder (Green Code Button -> Download ZIP)
 3. Extract the zip folder
-4. Double click on `installer.py`
+4. Double click on `installer.pyw`
 5. Follow the on-screen instructions to install a portable app to your Windows PC
 
 ## Uninstalling Programs
