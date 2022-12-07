@@ -190,46 +190,52 @@ if not CLI_MODE:
 
     # Header
     title = tk.Label(window, text="Portable Application Installer", font=font)
-    title.grid(column=1, row=0)
+    title.grid(column=0, row=0)
     author = tk.Label(window, text="Written by Stephen-Hamilton-C. Licensed under GPLv3.", font=font)
-    author.grid(column=1, row=10)
+    author.grid(column=0, row=1)
     source = tk.Label(window, text="Find the source code at https://github.com/Stephen-Hamilton-C/portable-application-installer", fg="blue", cursor="hand2", font=font+" underline")
     source.bind("<Button-1>", lambda e: os.startfile("https://github.com/Stephen-Hamilton-C/portable-application-installer"))
-    source.grid(column=1, row=20)
+    source.grid(column=0, row=2)
 
     # Path to exe
+    exe_frame = tk.Frame(window)
     def click_exe_browse():
         filename = askopenfilename()
         if filename != "":
             exe_input.delete("0.0", tk.END)
             exe_input.insert("0.0", filename)
-    exe_input_label = tk.Label(window, text="Path to Application:", font=font)
-    exe_input = tk.Text(window, height=1, font=font)
+    exe_input_label = tk.Label(exe_frame, text="Path to Application:", font=font)
+    exe_input = tk.Text(exe_frame, height=1, font=font)
     exe_input.insert("0.0", __file__)
-    exe_input_browse = tk.Button(window, text="...", command = click_exe_browse, font=font)
+    exe_input_browse = tk.Button(exe_frame, text="...", command = click_exe_browse, font=font)
     exe_input_label.grid(column=0, row=40, padx=6, pady=6)
     exe_input.grid(column=1, row=40, pady=6)
     exe_input_browse.grid(column=2, row=40, padx=6, ipadx=12, pady=6)
+    exe_frame.grid(column=0, row=4)
     
     # App name
-    app_name_label = tk.Label(window, text="Application Name:", font=font)
-    app_name_input = tk.Text(window, height=1, font=font)
+    app_frame = tk.Frame(window)
+    app_name_label = tk.Label(app_frame, text="Application Name:", font=font)
+    app_name_input = tk.Text(app_frame, height=1, font=font)
     app_name_label.grid(column=0, row=50, padx=6, pady=6)
     app_name_input.grid(column=1, row=50, pady=6)
+    app_frame.grid(column=0, row=5)
 
     # Install mode
-    install_mode = tk.StringVar(window, "u")
-    system_radio_button = tk.Radiobutton(window, text="Install for all users", value="a", variable=install_mode, font=font)
+    install_mode_frame = tk.Frame(window)
+    install_mode = tk.StringVar(install_mode_frame, "u")
+    system_radio_button = tk.Radiobutton(install_mode_frame, text="Install for all users", value="a", variable=install_mode, font=font)
     if ctypes.windll.shell32.IsUserAnAdmin() == 0:
         system_radio_button.config(state=tk.DISABLED, text="Install for all users (Run as admin to do this)")
-    user_radio_button = tk.Radiobutton(window, text="Install just for this user", value="u", variable=install_mode, font=font)
-    system_radio_button.grid(column=0, row=60)
-    user_radio_button.grid(column=0, row=70)
+    user_radio_button = tk.Radiobutton(install_mode_frame, text="Install just for this user", value="u", variable=install_mode, font=font)
+    system_radio_button.grid(column=0, row=0)
+    user_radio_button.grid(column=0, row=1)
+    install_mode_frame.grid(column=0, row=6, pady=12)
 
     # Copy all
     copy_all = tk.StringVar(window, "y")
     copy_all_checkbox = tk.Checkbutton(window, text="Copy all files in application folder?", variable=copy_all, onvalue="y", offvalue="n", font=font)
-    copy_all_checkbox.grid(column=0, row=80)
+    copy_all_checkbox.grid(column=0, row=8)
 
     # Run button
     def click_install():
@@ -282,7 +288,7 @@ if not CLI_MODE:
             messagebox.showerror("Error", "An unknown error occurred while installing! Try running from a command prompt to see the error in more detail.")
             install_button.config(state=tk.NORMAL, text="Install")
     install_button = tk.Button(window, text="Install", font=font, command=click_install)
-    install_button.grid(column=1, row=90, pady=12, ipadx=60)
+    install_button.grid(column=0, row=9, pady=12, ipadx=60)
     
     # Launch
     try:
