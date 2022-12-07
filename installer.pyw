@@ -228,7 +228,7 @@ if not CLI_MODE:
 
     # Copy all
     copy_all = tk.StringVar(window, "y")
-    copy_all_checkbox = tk.Checkbutton(window, text="Copy all files in exe directory?", variable=copy_all, onvalue="y", offvalue="n", font=font)
+    copy_all_checkbox = tk.Checkbutton(window, text="Copy all files in application folder?", variable=copy_all, onvalue="y", offvalue="n", font=font)
     copy_all_checkbox.grid(column=0, row=80)
 
     # Run button
