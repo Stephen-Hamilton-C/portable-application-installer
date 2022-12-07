@@ -1,2 +1,2 @@
 cd %~dp0
-python .\uninstaller.py
+python .\uninstaller.pyw
